@@ -1,7 +1,7 @@
-CREATE TABLE users
+CREATE TABLE Usuarios
 (
-    id            uuid PRIMARY KEY,
-    email         citext NOT NULL UNIQUE,
-    password_hash text NOT NULL,
-    created_at    timestamptz NOT NULL DEFAULT now()
+    Id        uuid PRIMARY KEY,
+    Email     citext NOT NULL UNIQUE,
+    HashSenha text NOT NULL,
+    CriadoEm  timestamptz NOT NULL DEFAULT now()
 );

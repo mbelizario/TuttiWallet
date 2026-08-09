@@ -1,15 +1,15 @@
-CREATE TABLE transactions
+CREATE TABLE Transacoes
 (
-    id          uuid PRIMARY KEY,
-    user_id     uuid NOT NULL REFERENCES users (id) ON DELETE CASCADE,
-    category_id uuid NOT NULL REFERENCES categories (id) ON DELETE RESTRICT,
-    type        text NOT NULL CHECK (type IN ('income', 'expense')),
-    amount      numeric(14, 2) NOT NULL CHECK (amount > 0),
-    occurred_on date NOT NULL,
-    description text,
-    created_at  timestamptz NOT NULL DEFAULT now()
+    Id             uuid PRIMARY KEY,
+    UsuarioId      uuid NOT NULL REFERENCES Usuarios (Id) ON DELETE CASCADE,
+    CategoriaId    uuid NOT NULL REFERENCES Categorias (Id) ON DELETE RESTRICT,
+    Tipo           text NOT NULL CHECK (Tipo IN ('receita', 'despesa')),
+    Valor          numeric(14, 2) NOT NULL CHECK (Valor > 0),
+    DataOcorrencia date NOT NULL,
+    Descricao      text,
+    CriadoEm       timestamptz NOT NULL DEFAULT now()
 );
 
-CREATE INDEX ix_transactions_user_id ON transactions (user_id);
-CREATE INDEX ix_transactions_category_id ON transactions (category_id);
-CREATE INDEX ix_transactions_occurred_on ON transactions (occurred_on);
+CREATE INDEX ix_transacoes_usuario_id ON Transacoes (UsuarioId);
+CREATE INDEX ix_transacoes_categoria_id ON Transacoes (CategoriaId);
+CREATE INDEX ix_transacoes_data_ocorrencia ON Transacoes (DataOcorrencia);

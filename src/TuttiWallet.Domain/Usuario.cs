@@ -1,25 +1,25 @@
 namespace TuttiWallet.Domain;
 
-public class User
+public class Usuario
 {
     public Guid Id { get; }
     public string Email { get; }
-    public string PasswordHash { get; }
+    public string HashSenha { get; }
 
-    public User(Guid id, string email, string passwordHash)
+    public Usuario(Guid id, string email, string hashSenha)
     {
         if (string.IsNullOrWhiteSpace(email))
         {
             throw new ArgumentException("O email é obrigatório.", nameof(email));
         }
 
-        if (string.IsNullOrWhiteSpace(passwordHash))
+        if (string.IsNullOrWhiteSpace(hashSenha))
         {
-            throw new ArgumentException("O hash de senha é obrigatório.", nameof(passwordHash));
+            throw new ArgumentException("O hash de senha é obrigatório.", nameof(hashSenha));
         }
 
         Id = id;
         Email = email;
-        PasswordHash = passwordHash;
+        HashSenha = hashSenha;
     }
 }

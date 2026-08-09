@@ -41,8 +41,11 @@ Schema do banco (ver `src/TuttiWallet.Migrator/Scripts`): `users`, `categories` 
 ### Convenção de nomenclatura
 
 - Nomes de tabelas e colunas são em **português**, escritos em **PascalCase** (ex.: `Usuarios`, `Categorias`, `CategoriaPaiId`, `Transacoes`).
+- Identificadores **não são citados** com aspas duplas no SQL (`CREATE TABLE Usuarios`, não `CREATE TABLE "Usuarios"`). O Postgres converte identificador não citado para minúsculas automaticamente, tanto na criação quanto em qualquer query futura — então tudo continua batendo sem precisar de aspas. Aspas duplas só entram em cena se for necessário preservar case exato, o que não é o caso aqui.
 - Assim como no código, os nomes devem ser significativos — evite abreviações que não sejam óbvias.
 - Essa convenção segue a mesma lógica do idioma no código: vocabulário de domínio em português; termos de padrão/convenção (ex.: sufixo `Id` para chave estrangeira) podem permanecer como estão, sem misturar dentro do mesmo termo.
+- Nomes de scripts são em **português**, escritos em **PascalCase**. Os nomes devem ser significativos — evite abreviações que não sejam óbvias.
+- O nome deve ser gerado no formato: Script000xNomeScript
 
 > **Pendente**: o schema atual (`users`, `categories`, `parent_category_id`, `transactions`) ainda está em inglês/snake_case, criado antes desta convenção. A migração dessas tabelas para o novo padrão está planejada como uma refatoração futura, ainda não iniciada — não renomeie tabelas existentes sem que essa refatoração seja pedida explicitamente.
 

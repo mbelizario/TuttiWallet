@@ -1,12 +1,12 @@
-CREATE TABLE categories
+CREATE TABLE Categorias
 (
-    id                 uuid PRIMARY KEY,
-    user_id            uuid NOT NULL REFERENCES users (id) ON DELETE CASCADE,
-    name               text NOT NULL,
-    type               text NOT NULL CHECK (type IN ('income', 'expense')),
-    parent_category_id uuid REFERENCES categories (id) ON DELETE CASCADE,
-    created_at         timestamptz NOT NULL DEFAULT now()
+    Id             uuid PRIMARY KEY,
+    UsuarioId      uuid NOT NULL REFERENCES Usuarios (Id) ON DELETE CASCADE,
+    Nome           text NOT NULL,
+    Tipo           text NOT NULL CHECK (Tipo IN ('receita', 'despesa')),
+    CategoriaPaiId uuid REFERENCES Categorias (Id) ON DELETE CASCADE,
+    CriadoEm       timestamptz NOT NULL DEFAULT now()
 );
 
-CREATE INDEX ix_categories_user_id ON categories (user_id);
-CREATE INDEX ix_categories_parent_category_id ON categories (parent_category_id);
+CREATE INDEX ix_categorias_usuario_id ON Categorias (UsuarioId);
+CREATE INDEX ix_categorias_categoria_pai_id ON Categorias (CategoriaPaiId);
