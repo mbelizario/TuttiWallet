@@ -1,0 +1,16 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/TuttiWallet.Api/TuttiWallet.Api.csproj" />
+    <Project Path="src/TuttiWallet.Application/TuttiWallet.Application.csproj" />
+    <Project Path="src/TuttiWallet.Contracts/TuttiWallet.Contracts.csproj" />
+    <Project Path="src/TuttiWallet.Domain/TuttiWallet.Domain.csproj" />
+    <Project Path="src/TuttiWallet.Infrastructure/TuttiWallet.Infrastructure.csproj" />
+    <Project Path="src/TuttiWallet.Migrator/TuttiWallet.Migrator.csproj" />
+    <Project Path="src/TuttiWallet.Web/TuttiWallet.Web.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/TuttiWallet.Api.IntegrationTests/TuttiWallet.Api.IntegrationTests.csproj" />
+    <Project Path="tests/TuttiWallet.Application.Tests/TuttiWallet.Application.Tests.csproj" />
+    <Project Path="tests/TuttiWallet.Domain.Tests/TuttiWallet.Domain.Tests.csproj" />
+  </Folder>
+</Solution>
