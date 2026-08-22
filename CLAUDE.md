@@ -89,6 +89,7 @@ Os testes de integração da API precisam de Docker rodando (sobem um Postgres v
 | Atualizar dado | `Atualizar` |
 | Excluir dado | `Excluir` |
 
+- Nomes de métodos sempre iniciam com um verbo no infinitivo (ex.: `Obter`, `Inserir`, `Garantir`, `Validar`) — nunca no gerúndio, particípio ou como substantivo.
 - Nomes de classes, métodos e atributos em PascalCase; nomes de variáveis em camelCase.
 - Nomes de classes iniciam preferencialmente com um substantivo.
 - Métodos assíncronos têm sufixo `Async`; sempre que possível e necessário, escreva métodos assíncronos.
@@ -109,6 +110,7 @@ Nesses três pontos, o agente pode se afastar da preferência quando segui-la à
 - Entidades de domínio validam seus próprios invariantes no construtor (ver `TuttiWallet.Domain`) em vez de aceitar estado inválido e validar depois.
 - DTOs de request/response ficam em `TuttiWallet.Contracts`, com sufixo `Request`/`Response` (ex.: `CriarCategoriaRequest`, `CategoriaResponse`). Nunca expor entidades de `Domain` diretamente pela API.
 - Métodos devem ser pequenos e testáveis.
+- Classes de entrada (`Program.cs` de qualquer projeto, `Main`, top-level statements) não devem crescer desorganizadas: ao adicionar lógica nova a elas, avalie extrair para um método de extensão (ou classe auxiliar, se não fizer sentido como extensão) em vez de acumular código inline.
 
 ## Limites — exigem autorização explícita antes de agir
 
