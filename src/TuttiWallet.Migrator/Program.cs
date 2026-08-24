@@ -1,5 +1,3 @@
-using System.Reflection;
-using DbUp;
 using TuttiWallet.Migrator;
 
 var connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING")
@@ -14,14 +12,7 @@ if (!bancoFoiCriado)
     Console.ResetColor();
 }
 
-var upgrader =
-    DeployChanges.To
-        .PostgresqlDatabase(connectionString)
-        .WithScriptsEmbeddedInAssembly(Assembly.GetExecutingAssembly())
-        .LogToConsole()
-        .Build();
-
-var result = upgrader.PerformUpgrade();
+var result = connectionString.AplicarScripts();
 
 if (!result.Successful)
 {

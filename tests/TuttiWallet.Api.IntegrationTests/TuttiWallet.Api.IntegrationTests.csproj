@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\TuttiWallet.Api\TuttiWallet.Api.csproj" />
+    <ProjectReference Include="..\..\src\TuttiWallet.Migrator\TuttiWallet.Migrator.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,9 @@
+ALTER TABLE Usuarios
+    ADD COLUMN Nome      text NOT NULL DEFAULT '',
+    ADD COLUMN Sobrenome text NOT NULL DEFAULT '',
+    ADD COLUMN Celular   text NOT NULL DEFAULT '';
+
+ALTER TABLE Usuarios
+    ALTER COLUMN Nome DROP DEFAULT,
+    ALTER COLUMN Sobrenome DROP DEFAULT,
+    ALTER COLUMN Celular DROP DEFAULT;
