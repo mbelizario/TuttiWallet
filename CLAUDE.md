@@ -61,8 +61,21 @@ API fica em `http://localhost:8080` (porta configurável em `.env`), Web em `htt
 **Localmente, sem Docker (dev do dia a dia):**
 - Suba um Postgres local (ou use `docker compose up postgres`).
 - Rode o migrator apontando `CONNECTION_STRING` para esse Postgres.
+- Configure a connection string da API via User Secrets (ver seção [Segredos e configuração](#segredos-e-configuração) abaixo) antes do primeiro `dotnet run`.
 - `dotnet run --project src/TuttiWallet.Api`
 - `dotnet run --project src/TuttiWallet.Web`
+
+## Segredos e configuração
+
+- **Nenhum segredo real (senha, connection string, chave JWT) deve ir para arquivos commitados** (`appsettings.json`, `appsettings.Development.json`, etc.). Esses arquivos só têm placeholders vazios (ex.: `"ConnectionStrings": { "Postgres": "" }`).
+- **Fluxo Docker**: os valores reais vêm do `.env` (baseado em `.env.example`, gitignorado — ver `*.env` no `.gitignore`), injetados como variáveis de ambiente no `docker-compose.yml` (`ConnectionStrings__Postgres`, etc.), que o ASP.NET Core sobrescreve por cima do `appsettings.json` automaticamente.
+- **Fluxo local sem Docker**: os valores reais vêm do **.NET User Secrets**, builtin do ASP.NET Core (carregado automaticamente pelo `WebApplication.CreateBuilder` quando `ASPNETCORE_ENVIRONMENT=Development`), guardados fora do repositório em `%APPDATA%\Microsoft\UserSecrets\{UserSecretsId}\secrets.json`. Configuração inicial (uma vez por máquina), a partir de `src/TuttiWallet.Api`:
+  ```
+  dotnet user-secrets set "ConnectionStrings:Postgres" "Host=localhost;Port=5432;Database=tuttiwallet;Username=<usuario>;Password=<senha>"
+  ```
+  (o `UserSecretsId` já está registrado no `TuttiWallet.Api.csproj`; não precisa rodar `dotnet user-secrets init` de novo.)
+- **Por que User Secrets em vez de ler o `.env` também na API**: o ASP.NET Core não lê arquivos `.env` nativamente — exigiria um pacote NuGet extra (ex.: `DotNetEnv`) só para isso. User Secrets é a ferramenta idiomática do próprio framework para segredos de desenvolvimento local, sem dependência nova.
+- Documentação de uso prático (passo a passo para quem clona o repo) será adicionada futuramente ao `README.md`.
 
 ## Testes
 
