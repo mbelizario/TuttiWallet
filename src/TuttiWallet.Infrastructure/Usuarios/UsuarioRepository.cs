@@ -21,6 +21,14 @@ public sealed class UsuarioRepository(NpgsqlDataSource dataSource) : IUsuarioRep
             new { Email = email });
     }
 
+    public async Task<Usuario?> ObterPorEmailAsync(string email)
+    {
+        await using var conexao = await dataSource.OpenConnectionAsync();
+        return await conexao.QuerySingleOrDefaultAsync<Usuario>(
+            "SELECT Id, Nome, Sobrenome, Email, Celular, HashSenha FROM Usuarios WHERE Email = @Email;",
+            new { Email = email });
+    }
+
     public async Task InserirAsync(Usuario usuario)
     {
         await using var conexao = await dataSource.OpenConnectionAsync();
