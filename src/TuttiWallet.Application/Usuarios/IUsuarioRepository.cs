@@ -8,5 +8,7 @@ public interface IUsuarioRepository
 
     Task<bool> ObterExistePorEmailAsync(string email);
 
+    Task<Usuario?> ObterPorEmailAsync(string email);
+
     Task InserirAsync(Usuario usuario);
 }

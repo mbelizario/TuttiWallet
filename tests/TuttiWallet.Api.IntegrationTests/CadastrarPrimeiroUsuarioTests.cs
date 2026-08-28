@@ -14,7 +14,7 @@ public class CadastrarPrimeiroUsuarioTests(ApiWebApplicationFactory factory)
     {
         await using var conexao = new NpgsqlConnection(factory.ConnectionString);
         await conexao.OpenAsync();
-        await conexao.ExecuteAsync("TRUNCATE TABLE Usuarios;");
+        await conexao.ExecuteAsync("TRUNCATE TABLE Usuarios CASCADE;");
     }
 
     public Task DisposeAsync() => Task.CompletedTask;

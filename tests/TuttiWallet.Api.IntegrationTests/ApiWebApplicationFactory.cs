@@ -15,6 +15,7 @@ public sealed class ApiWebApplicationFactory : WebApplicationFactory<Program>, I
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseSetting("ConnectionStrings:Postgres", ConnectionString);
+        builder.UseSetting("Jwt:Chave", "chave-secreta-para-testes-de-integracao-0123456789");
     }
 
     public async Task InitializeAsync()
