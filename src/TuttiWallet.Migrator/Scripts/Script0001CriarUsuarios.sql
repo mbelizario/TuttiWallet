@@ -1,4 +1,4 @@
-CREATE TABLE Usuarios
+CREATE TABLE IF NOT EXISTS Usuarios
 (
     Id        uuid PRIMARY KEY,
     Email     citext NOT NULL UNIQUE,

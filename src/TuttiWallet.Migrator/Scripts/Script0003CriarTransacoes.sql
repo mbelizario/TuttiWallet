@@ -1,4 +1,4 @@
-CREATE TABLE Transacoes
+CREATE TABLE IF NOT EXISTS Transacoes
 (
     Id             uuid PRIMARY KEY,
     UsuarioId      uuid NOT NULL REFERENCES Usuarios (Id) ON DELETE CASCADE,
@@ -10,6 +10,6 @@ CREATE TABLE Transacoes
     CriadoEm       timestamptz NOT NULL DEFAULT now()
 );
 
-CREATE INDEX ix_transacoes_usuario_id ON Transacoes (UsuarioId);
-CREATE INDEX ix_transacoes_categoria_id ON Transacoes (CategoriaId);
-CREATE INDEX ix_transacoes_data_ocorrencia ON Transacoes (DataOcorrencia);
+CREATE INDEX IF NOT EXISTS ix_transacoes_usuario_id ON Transacoes (UsuarioId);
+CREATE INDEX IF NOT EXISTS ix_transacoes_categoria_id ON Transacoes (CategoriaId);
+CREATE INDEX IF NOT EXISTS ix_transacoes_data_ocorrencia ON Transacoes (DataOcorrencia);

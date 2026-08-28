@@ -9,7 +9,7 @@ Objetivos do projeto (relevantes para as decisões técnicas abaixo): portfólio
 - **Backend**: C# / ASP.NET Core (.NET 10), Minimal APIs.
 - **Acesso a dados**: Dapper + Npgsql. Sem EF Core de propósito — decisão consciente para não esconder o SQL.
 - **Banco de dados**: PostgreSQL.
-- **Migrações**: DbUp, com scripts SQL puros em `src/TuttiWallet.Migrator/Scripts`, rodados por um serviço `migrator` separado (console app) antes da API subir.
+- **Migrações**: DbUp, com scripts SQL puros em `src/TuttiWallet.Migrator/Scripts`, rodados por um serviço `migrator` separado (console app) antes da API subir. Todo script deve ser idempotente — escrito para não quebrar se executado mais de uma vez (`CREATE TABLE IF NOT EXISTS`, `CREATE INDEX IF NOT EXISTS`, `ADD COLUMN IF NOT EXISTS`, etc.), mesmo que o DbUp já mantenha um journal de scripts executados.
 - **Frontend**: Blazor WebAssembly standalone (`src/TuttiWallet.Web`), consumindo a API via HTTP — não é Blazor Server. Tratado como um client desacoplado, do mesmo jeito que um SPA em React trataria a API.
 - **Autenticação**: JWT implementado à mão (sem ASP.NET Identity completo, sem OAuth externo). Hash de senha via `Microsoft.Extensions.Identity.Core` (`PasswordHasher<T>`).
 - **Testes**: xUnit + FluentAssertions. Testes de integração da API usam `Testcontainers.PostgreSql` (sobe um Postgres real em container, não mocka o banco).

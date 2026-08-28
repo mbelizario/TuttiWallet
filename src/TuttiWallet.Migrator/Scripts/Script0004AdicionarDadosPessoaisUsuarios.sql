@@ -1,7 +1,7 @@
 ALTER TABLE Usuarios
-    ADD COLUMN Nome      text NOT NULL DEFAULT '',
-    ADD COLUMN Sobrenome text NOT NULL DEFAULT '',
-    ADD COLUMN Celular   text NOT NULL DEFAULT '';
+    ADD COLUMN IF NOT EXISTS Nome      text NOT NULL DEFAULT '',
+    ADD COLUMN IF NOT EXISTS Sobrenome text NOT NULL DEFAULT '',
+    ADD COLUMN IF NOT EXISTS Celular   text NOT NULL DEFAULT '';
 
 ALTER TABLE Usuarios
     ALTER COLUMN Nome DROP DEFAULT,

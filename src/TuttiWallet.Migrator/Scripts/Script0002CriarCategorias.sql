@@ -1,4 +1,4 @@
-CREATE TABLE Categorias
+CREATE TABLE IF NOT EXISTS Categorias
 (
     Id             uuid PRIMARY KEY,
     UsuarioId      uuid NOT NULL REFERENCES Usuarios (Id) ON DELETE CASCADE,
@@ -8,5 +8,5 @@ CREATE TABLE Categorias
     CriadoEm       timestamptz NOT NULL DEFAULT now()
 );
 
-CREATE INDEX ix_categorias_usuario_id ON Categorias (UsuarioId);
-CREATE INDEX ix_categorias_categoria_pai_id ON Categorias (CategoriaPaiId);
+CREATE INDEX IF NOT EXISTS ix_categorias_usuario_id ON Categorias (UsuarioId);
+CREATE INDEX IF NOT EXISTS ix_categorias_categoria_pai_id ON Categorias (CategoriaPaiId);
