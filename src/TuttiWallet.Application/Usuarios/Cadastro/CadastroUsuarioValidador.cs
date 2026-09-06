@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace TuttiWallet.Application.Usuarios;
+namespace TuttiWallet.Application.Usuarios.Cadastro;
 
 public static partial class CadastroUsuarioValidador
 {

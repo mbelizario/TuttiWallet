@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using TuttiWallet.Application.Categorias;
+using TuttiWallet.Application.Categorias.Cadastro;
 using TuttiWallet.Contracts.Categorias;
 
 namespace TuttiWallet.Api.Categorias;

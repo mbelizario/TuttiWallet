@@ -2,7 +2,7 @@ using System.Globalization;
 using System.Text;
 using TuttiWallet.Domain;
 
-namespace TuttiWallet.Application.Categorias;
+namespace TuttiWallet.Application.Categorias.Cadastro;
 
 public static class CadastroCategoriaValidador
 {

@@ -1,6 +1,6 @@
 using TuttiWallet.Domain;
 
-namespace TuttiWallet.Application.Categorias;
+namespace TuttiWallet.Application.Categorias.Cadastro;
 
 public sealed class CadastrarCategoriaUseCase(ICategoriaRepository categoriaRepository)
 {

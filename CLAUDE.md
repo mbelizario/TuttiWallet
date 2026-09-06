@@ -126,6 +126,7 @@ Nesses três pontos, o agente pode se afastar da preferência quando segui-la à
 - DTOs de request/response ficam em `TuttiWallet.Contracts`, com sufixo `Request`/`Response` (ex.: `CriarCategoriaRequest`, `CategoriaResponse`). Nunca expor entidades de `Domain` diretamente pela API.
 - Métodos devem ser pequenos e testáveis.
 - Classes de entrada (`Program.cs` de qualquer projeto, `Main`, top-level statements) não devem crescer desorganizadas: ao adicionar lógica nova a elas, avalie extrair para um método de extensão (ou classe auxiliar, se não fizer sentido como extensão) em vez de acumular código inline.
+- Arquivos devem ser organizados primeiro por feature e, quando houver mais de um assunto, por caso de uso ou assunto dentro da feature (ex.: `Categorias/Cadastro`). Interfaces e contratos compartilhados por mais de um caso de uso devem permanecer na raiz da feature.
 
 ## Limites — exigem autorização explícita antes de agir
 

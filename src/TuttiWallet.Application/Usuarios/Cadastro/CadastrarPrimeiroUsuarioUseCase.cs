@@ -1,6 +1,6 @@
 using TuttiWallet.Domain;
 
-namespace TuttiWallet.Application.Usuarios;
+namespace TuttiWallet.Application.Usuarios.Cadastro;
 
 public sealed class CadastrarPrimeiroUsuarioUseCase(IUsuarioRepository usuarioRepository, ISenhaHasher senhaHasher)
 {

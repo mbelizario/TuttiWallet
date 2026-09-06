@@ -1,9 +1,10 @@
 using FluentAssertions;
 using Moq;
 using TuttiWallet.Application.Usuarios;
+using TuttiWallet.Application.Usuarios.Cadastro;
 using TuttiWallet.Domain;
 
-namespace TuttiWallet.Application.Tests.Usuarios;
+namespace TuttiWallet.Application.Tests.Usuarios.Cadastro;
 
 public class CadastrarPrimeiroUsuarioUseCaseTests
 {
