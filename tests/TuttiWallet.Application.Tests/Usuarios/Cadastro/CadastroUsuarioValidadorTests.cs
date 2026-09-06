@@ -1,7 +1,8 @@
 using FluentAssertions;
 using TuttiWallet.Application.Usuarios;
+using TuttiWallet.Application.Usuarios.Cadastro;
 
-namespace TuttiWallet.Application.Tests.Usuarios;
+namespace TuttiWallet.Application.Tests.Usuarios.Cadastro;
 
 public class CadastroUsuarioValidadorTests
 {

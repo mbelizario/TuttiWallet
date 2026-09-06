@@ -1,4 +1,4 @@
-namespace TuttiWallet.Application.Categorias;
+namespace TuttiWallet.Application.Categorias.Cadastro;
 
 public enum StatusCadastroCategoria
 {

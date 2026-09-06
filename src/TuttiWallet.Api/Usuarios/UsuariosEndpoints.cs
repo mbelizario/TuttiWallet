@@ -1,4 +1,5 @@
 using TuttiWallet.Application.Usuarios;
+using TuttiWallet.Application.Usuarios.Cadastro;
 using TuttiWallet.Contracts.Usuarios;
 
 namespace TuttiWallet.Api.Usuarios;

@@ -14,9 +14,7 @@ public sealed class AutenticarUsuarioUseCase(
         var usuario = await usuarioRepository.ObterPorEmailAsync(comando.Email);
 
         if (usuario is null || !senhaHasher.VerificarHash(usuario.HashSenha, comando.Senha))
-        {
             return ResultadoAutenticacao.ComCredenciaisInvalidas();
-        }
 
         var (accessToken, expiraEmAcesso) = geradorToken.GerarTokenAcesso(usuario);
         var (tokenRenovacaoBruto, hashTokenRenovacao, expiraEmRenovacao) = geradorToken.GerarTokenRenovacao();

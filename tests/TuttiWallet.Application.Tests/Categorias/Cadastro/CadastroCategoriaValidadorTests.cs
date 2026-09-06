@@ -1,7 +1,8 @@
 using FluentAssertions;
 using TuttiWallet.Application.Categorias;
+using TuttiWallet.Application.Categorias.Cadastro;
 
-namespace TuttiWallet.Application.Tests.Categorias;
+namespace TuttiWallet.Application.Tests.Categorias.Cadastro;
 
 public class CadastroCategoriaValidadorTests
 {

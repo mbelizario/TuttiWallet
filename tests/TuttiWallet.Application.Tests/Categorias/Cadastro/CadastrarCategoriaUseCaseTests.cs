@@ -1,9 +1,10 @@
 using FluentAssertions;
 using Moq;
 using TuttiWallet.Application.Categorias;
+using TuttiWallet.Application.Categorias.Cadastro;
 using TuttiWallet.Domain;
 
-namespace TuttiWallet.Application.Tests.Categorias;
+namespace TuttiWallet.Application.Tests.Categorias.Cadastro;
 
 public class CadastrarCategoriaUseCaseTests
 {

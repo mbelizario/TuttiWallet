@@ -20,9 +20,7 @@ public class Transacao
         string? descricao = null)
     {
         if (valor <= 0)
-        {
             throw new ArgumentOutOfRangeException(nameof(valor), "O valor da transação deve ser maior que zero.");
-        }
 
         Id = id;
         UsuarioId = usuarioId;

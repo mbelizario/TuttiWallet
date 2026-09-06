@@ -12,29 +12,19 @@ public class Usuario
     public Usuario(Guid id, string nome, string sobrenome, string email, string celular, string hashSenha)
     {
         if (string.IsNullOrWhiteSpace(nome))
-        {
             throw new ArgumentException("O nome é obrigatório.", nameof(nome));
-        }
 
         if (string.IsNullOrWhiteSpace(sobrenome))
-        {
             throw new ArgumentException("O sobrenome é obrigatório.", nameof(sobrenome));
-        }
 
         if (string.IsNullOrWhiteSpace(email))
-        {
             throw new ArgumentException("O email é obrigatório.", nameof(email));
-        }
 
         if (string.IsNullOrWhiteSpace(celular))
-        {
             throw new ArgumentException("O celular é obrigatório.", nameof(celular));
-        }
 
         if (string.IsNullOrWhiteSpace(hashSenha))
-        {
             throw new ArgumentException("O hash de senha é obrigatório.", nameof(hashSenha));
-        }
 
         Id = id;
         Nome = nome;
