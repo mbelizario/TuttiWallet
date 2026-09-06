@@ -58,7 +58,7 @@ public class ListarCategoriasTests(ApiWebApplicationFactory factory)
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         var conteudo = await response.Content.ReadFromJsonAsync<ListarCategoriasResponse>();
         conteudo!.Pagina.Should().Be(1);
-        conteudo.TamanhoPagina.Should().Be(20);
+        conteudo.TamanhoPagina.Should().Be(10);
         conteudo.TotalRegistros.Should().Be(2);
         conteudo.TotalPaginas.Should().Be(1);
         conteudo.Itens.Should().HaveCount(2);
