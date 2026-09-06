@@ -1,10 +1,10 @@
 using TuttiWallet.Domain;
 
-namespace TuttiWallet.Application.Categorias.Cadastro;
+namespace TuttiWallet.Application.Categorias.Edicao;
 
-public static class CadastroCategoriaValidador
+public static class EdicaoCategoriaValidador
 {
-    public static Dictionary<string, List<string>> Validar(CadastrarCategoriaComando comando)
+    public static Dictionary<string, List<string>> Validar(EditarCategoriaComando comando)
     {
         var erros = new Dictionary<string, List<string>>();
 

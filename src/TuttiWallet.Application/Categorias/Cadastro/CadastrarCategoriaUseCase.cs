@@ -16,17 +16,17 @@ public sealed class CadastrarCategoriaUseCase(ICategoriaRepository categoriaRepo
 
             if (categoriaPai is null)
             {
-                CadastroCategoriaValidador.AdicionarErro(
+                CategoriaValidador.AdicionarErro(
                     erros, nameof(comando.CategoriaPaiId), "Categoria pai não encontrada.");
             }
             else if (categoriaPai.CategoriaPaiId is not null)
             {
-                CadastroCategoriaValidador.AdicionarErro(
+                CategoriaValidador.AdicionarErro(
                     erros, nameof(comando.CategoriaPaiId), "A categoria pai não pode ser uma subcategoria.");
             }
             else if (!erros.ContainsKey(nameof(comando.TipoId)) && (int)categoriaPai.Tipo != comando.TipoId)
             {
-                CadastroCategoriaValidador.AdicionarErro(
+                CategoriaValidador.AdicionarErro(
                     erros, nameof(comando.TipoId), "O tipo deve ser igual ao da categoria pai.");
             }
         }
@@ -34,10 +34,10 @@ public sealed class CadastrarCategoriaUseCase(ICategoriaRepository categoriaRepo
         if (!erros.ContainsKey(nameof(comando.Nome)))
         {
             var nomesExistentes = await categoriaRepository.ObterNomesPorPaiAsync(comando.UsuarioId, comando.CategoriaPaiId);
-            var nomeNormalizado = CadastroCategoriaValidador.NormalizarNome(comando.Nome);
+            var nomeNormalizado = CategoriaValidador.NormalizarNome(comando.Nome);
 
-            if (nomesExistentes.Any(nome => CadastroCategoriaValidador.NormalizarNome(nome) == nomeNormalizado))
-                CadastroCategoriaValidador.AdicionarErro(erros, nameof(comando.Nome), "Já existe uma categoria com este nome.");
+            if (nomesExistentes.Any(nome => CategoriaValidador.NormalizarNome(nome) == nomeNormalizado))
+                CategoriaValidador.AdicionarErro(erros, nameof(comando.Nome), "Já existe uma categoria com este nome.");
         }
 
         if (erros.Count > 0)

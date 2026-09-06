@@ -2,6 +2,7 @@ using System.Security.Claims;
 using TuttiWallet.Application.Categorias;
 using TuttiWallet.Application.Categorias.Cadastro;
 using TuttiWallet.Application.Categorias.Consulta;
+using TuttiWallet.Application.Categorias.Edicao;
 using TuttiWallet.Application.Categorias.Listagem;
 using TuttiWallet.Contracts.Categorias;
 using TuttiWallet.Domain;
@@ -15,6 +16,7 @@ public static class CategoriasEndpoints
         app.MapPost("/api/categorias", CriarCategoriaAsync).RequireAuthorization();
         app.MapGet("/api/categorias/{id:guid}", ConsultarCategoriaPorIdAsync).RequireAuthorization();
         app.MapGet("/api/categorias", ListarCategoriasAsync).RequireAuthorization();
+        app.MapPut("/api/categorias/{id:guid}", EditarCategoriaAsync).RequireAuthorization();
 
         return app;
     }
@@ -42,6 +44,34 @@ public static class CategoriasEndpoints
                 $"/api/categorias/{resultado.CategoriaId}",
                 new CategoriaResponse { Id = resultado.CategoriaId!.Value }),
             StatusCadastroCategoria.DadosInvalidos => TypedResults.ValidationProblem(resultado.Erros),
+            _ => TypedResults.Problem()
+        };
+    }
+
+    private static async Task<IResult> EditarCategoriaAsync(
+        Guid id,
+        EditarCategoriaRequest request,
+        ClaimsPrincipal usuarioLogado,
+        EditarCategoriaUseCase useCase)
+    {
+        var usuarioId = Guid.Parse(usuarioLogado.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+        var comando = new EditarCategoriaComando
+        {
+            UsuarioId = usuarioId,
+            CategoriaId = id,
+            Nome = request.Nome,
+            TipoId = request.TipoId,
+            CategoriaPaiId = request.CategoriaPaiId
+        };
+
+        var resultado = await useCase.ExecutarAsync(comando);
+
+        return resultado.Status switch
+        {
+            StatusEdicaoCategoria.Sucesso => TypedResults.NoContent(),
+            StatusEdicaoCategoria.NaoEncontrada => TypedResults.NotFound(),
+            StatusEdicaoCategoria.DadosInvalidos => TypedResults.ValidationProblem(resultado.Erros),
             _ => TypedResults.Problem()
         };
     }

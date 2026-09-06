@@ -3,10 +3,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using TuttiWallet.Application.Autenticacao;
 using TuttiWallet.Application.Categorias;
+using TuttiWallet.Application.Transacoes;
 using TuttiWallet.Application.Usuarios;
 using TuttiWallet.Infrastructure.Autenticacao;
 using TuttiWallet.Infrastructure.Categorias;
 using TuttiWallet.Infrastructure.HealthChecks;
+using TuttiWallet.Infrastructure.Transacoes;
 using TuttiWallet.Infrastructure.Usuarios;
 
 namespace TuttiWallet.Infrastructure;
@@ -30,6 +32,7 @@ public static class DependencyInjection
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddSingleton<IGeradorToken, GeradorToken>();
         services.AddScoped<ICategoriaRepository, CategoriaRepository>();
+        services.AddScoped<ITransacaoRepository, TransacaoRepository>();
 
         return services;
     }

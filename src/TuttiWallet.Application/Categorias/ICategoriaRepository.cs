@@ -10,4 +10,5 @@ public interface ICategoriaRepository
     Task<int> ObterQuantidadeAsync(Guid usuarioId);
     Task<IReadOnlyList<Categoria>> ObterPaginadoAsync(Guid usuarioId, int pagina, int tamanhoPagina);
     Task InserirAsync(Categoria categoria);
+    Task AtualizarAsync(Categoria categoria);
 }

@@ -75,6 +75,26 @@ public sealed class CategoriaRepository(NpgsqlDataSource dataSource) : ICategori
             });
     }
 
+    public async Task AtualizarAsync(Categoria categoria)
+    {
+        await using var conexao = await dataSource.OpenConnectionAsync();
+
+        await conexao.ExecuteAsync(
+            """
+            UPDATE Categorias
+            SET Nome = @Nome, TipoId = @TipoId, CategoriaPaiId = @CategoriaPaiId
+            WHERE Id = @Id AND UsuarioId = @UsuarioId;
+            """,
+            new
+            {
+                categoria.Id,
+                categoria.UsuarioId,
+                categoria.Nome,
+                TipoId = (int)categoria.Tipo,
+                categoria.CategoriaPaiId
+            });
+    }
+
     public async Task<int> ObterQuantidadeAsync(Guid usuarioId)
     {
         await using var conexao = await dataSource.OpenConnectionAsync();
