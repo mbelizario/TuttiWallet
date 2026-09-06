@@ -2,8 +2,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using TuttiWallet.Application.Autenticacao;
+using TuttiWallet.Application.Categorias;
 using TuttiWallet.Application.Usuarios;
 using TuttiWallet.Infrastructure.Autenticacao;
+using TuttiWallet.Infrastructure.Categorias;
 using TuttiWallet.Infrastructure.HealthChecks;
 using TuttiWallet.Infrastructure.Usuarios;
 
@@ -27,6 +29,7 @@ public static class DependencyInjection
         services.AddSingleton<ISenhaHasher, SenhaHasher>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         services.AddSingleton<IGeradorToken, GeradorToken>();
+        services.AddScoped<ICategoriaRepository, CategoriaRepository>();
 
         return services;
     }

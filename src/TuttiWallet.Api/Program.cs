@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using TuttiWallet.Api.Autenticacao;
+using TuttiWallet.Api.Categorias;
 using TuttiWallet.Api.Usuarios;
 using TuttiWallet.Application;
 using TuttiWallet.Infrastructure;
@@ -63,6 +64,7 @@ app.UseAuthorization();
 app.MapHealthChecks("/health");
 app.MapUsuariosEndpoints();
 app.MapAutenticacaoEndpoints();
+app.MapCategoriasEndpoints();
 
 app.Run();
 
