@@ -75,6 +75,34 @@ public sealed class CategoriaRepository(NpgsqlDataSource dataSource) : ICategori
             });
     }
 
+    public async Task<int> ObterQuantidadeAsync(Guid usuarioId)
+    {
+        await using var conexao = await dataSource.OpenConnectionAsync();
+
+        return await conexao.QuerySingleAsync<int>(
+            "SELECT COUNT(*) FROM Categorias WHERE UsuarioId = @UsuarioId;",
+            new { UsuarioId = usuarioId });
+    }
+
+    public async Task<IReadOnlyList<Categoria>> ObterPaginadoAsync(Guid usuarioId, int pagina, int tamanhoPagina)
+    {
+        await using var conexao = await dataSource.OpenConnectionAsync();
+
+        var registros = await conexao.QueryAsync<CategoriaRegistro>(
+            """
+            SELECT Id, UsuarioId, Nome, TipoId, CategoriaPaiId
+            FROM Categorias
+            WHERE UsuarioId = @UsuarioId
+            ORDER BY Nome
+            OFFSET @Deslocamento LIMIT @TamanhoPagina;
+            """,
+            new { UsuarioId = usuarioId, Deslocamento = (pagina - 1) * tamanhoPagina, TamanhoPagina = tamanhoPagina });
+
+        return registros
+            .Select(registro => new Categoria(registro.Id, registro.UsuarioId, registro.Nome, (TipoTransacao)registro.TipoId, registro.CategoriaPaiId))
+            .ToList();
+    }
+
     private sealed class CategoriaRegistro
     {
         public Guid Id { get; init; }
