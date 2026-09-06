@@ -42,14 +42,11 @@ public static partial class CadastroUsuarioValidador
         }
 
         if (valor.Length is < TamanhoMinimoNome or > TamanhoMaximoNome)
-        {
             AdicionarErro(erros, campo, $"Deve ter entre {TamanhoMinimoNome} e {TamanhoMaximoNome} caracteres.");
-        }
 
         if (!RegexNome().IsMatch(valor))
-        {
             AdicionarErro(erros, campo, "Deve conter apenas letras e espaços.");
-        }
+
     }
 
     private static void ValidarEmail(string valor, Dictionary<string, List<string>> erros)
@@ -63,9 +60,7 @@ public static partial class CadastroUsuarioValidador
         }
 
         if (!RegexEmail().IsMatch(valor))
-        {
             AdicionarErro(erros, campo, "Formato de e-mail inválido.");
-        }
     }
 
     private static void ValidarCelular(string valor, Dictionary<string, List<string>> erros)
@@ -79,9 +74,7 @@ public static partial class CadastroUsuarioValidador
         }
 
         if (!RegexCelular().IsMatch(valor))
-        {
             AdicionarErro(erros, campo, "Formato inválido. Use (99) 99999-9999.");
-        }
     }
 
     private static void ValidarSenha(string senha, string confirmacaoSenha, Dictionary<string, List<string>> erros)
@@ -95,19 +88,13 @@ public static partial class CadastroUsuarioValidador
         }
 
         if (senha.Length is < TamanhoMinimoSenha or > TamanhoMaximoSenha)
-        {
             AdicionarErro(erros, campoSenha, $"Deve ter entre {TamanhoMinimoSenha} e {TamanhoMaximoSenha} caracteres.");
-        }
 
         if (!senha.Any(char.IsLetter) || !senha.Any(char.IsDigit))
-        {
             AdicionarErro(erros, campoSenha, "Deve conter letras e números.");
-        }
 
         if (ContemSequenciaNumericaObvia(senha))
-        {
             AdicionarErro(erros, campoSenha, "Não pode conter sequências numéricas óbvias, como 123 ou 456.");
-        }
 
         if (senha != confirmacaoSenha)
         {
@@ -123,9 +110,7 @@ public static partial class CadastroUsuarioValidador
         for (var i = 0; i < senha.Length - 2; i++)
         {
             if (!char.IsDigit(senha[i]) || !char.IsDigit(senha[i + 1]) || !char.IsDigit(senha[i + 2]))
-            {
                 continue;
-            }
 
             var primeiro = senha[i] - '0';
             var segundo = senha[i + 1] - '0';
@@ -135,9 +120,7 @@ public static partial class CadastroUsuarioValidador
             var decrescente = segundo == primeiro - 1 && terceiro == segundo - 1;
 
             if (crescente || decrescente)
-            {
                 return true;
-            }
         }
 
         return false;

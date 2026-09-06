@@ -11,14 +11,10 @@ public class Categoria
     public Categoria(Guid id, Guid usuarioId, string nome, TipoTransacao tipo, Guid? categoriaPaiId = null)
     {
         if (string.IsNullOrWhiteSpace(nome))
-        {
             throw new ArgumentException("O nome da categoria é obrigatório.", nameof(nome));
-        }
 
         if (categoriaPaiId == id)
-        {
             throw new ArgumentException("Uma categoria não pode ser subcategoria de si mesma.", nameof(categoriaPaiId));
-        }
 
         Id = id;
         UsuarioId = usuarioId;

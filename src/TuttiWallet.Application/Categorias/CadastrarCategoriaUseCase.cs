@@ -37,15 +37,11 @@ public sealed class CadastrarCategoriaUseCase(ICategoriaRepository categoriaRepo
             var nomeNormalizado = CadastroCategoriaValidador.NormalizarNome(comando.Nome);
 
             if (nomesExistentes.Any(nome => CadastroCategoriaValidador.NormalizarNome(nome) == nomeNormalizado))
-            {
                 CadastroCategoriaValidador.AdicionarErro(erros, nameof(comando.Nome), "Já existe uma categoria com este nome.");
-            }
         }
 
         if (erros.Count > 0)
-        {
             return ResultadoCadastroCategoria.ComDadosInvalidos(erros);
-        }
 
         var categoria = new Categoria(
             Guid.NewGuid(),

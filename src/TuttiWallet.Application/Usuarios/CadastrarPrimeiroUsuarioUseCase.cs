@@ -7,24 +7,18 @@ public sealed class CadastrarPrimeiroUsuarioUseCase(IUsuarioRepository usuarioRe
     public async Task<ResultadoCadastroPrimeiroUsuario> ExecutarAsync(CadastrarPrimeiroUsuarioComando comando)
     {
         if (await usuarioRepository.ObterQuantidadeUsuariosAsync() > 0)
-        {
             return ResultadoCadastroPrimeiroUsuario.ComUsuarioJaExistente();
-        }
 
         var erros = CadastroUsuarioValidador.Validar(comando);
 
         if (await usuarioRepository.ObterExistePorEmailAsync(comando.Email))
-        {
             CadastroUsuarioValidador.AdicionarErro(
                 erros,
                 nameof(CadastrarPrimeiroUsuarioComando.Email),
                 "Este e-mail já está cadastrado.");
-        }
 
         if (erros.Count > 0)
-        {
             return ResultadoCadastroPrimeiroUsuario.ComDadosInvalidos(erros);
-        }
 
         var celularSomenteDigitos = new string(comando.Celular.Where(char.IsDigit).ToArray());
         var hashSenha = senhaHasher.GerarHash(comando.Senha);

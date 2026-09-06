@@ -11,14 +11,10 @@ public static class CadastroCategoriaValidador
         var erros = new Dictionary<string, List<string>>();
 
         if (string.IsNullOrWhiteSpace(comando.Nome))
-        {
             AdicionarErro(erros, nameof(comando.Nome), "Este campo é obrigatório.");
-        }
 
         if (!Enum.IsDefined(typeof(TipoTransacao), comando.TipoId))
-        {
             AdicionarErro(erros, nameof(comando.TipoId), "Tipo inválido.");
-        }
 
         return erros;
     }

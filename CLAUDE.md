@@ -114,6 +114,7 @@ Os testes de integração da API precisam de Docker rodando (sobem um Postgres v
 
 - Preferência por "early return" em vez de aninhamento.
 - Preferência por evitar `else`, priorizando if + early return.
+- Quando um `if` ou outro condicional tiver uma única instrução, prefira omitir as chaves; mantenha-as quando a omissão prejudicar a legibilidade.
 - Responsabilidade única por método.
 
 Nesses três pontos, o agente pode se afastar da preferência quando segui-la à risca tornaria o código pior ou mais confuso — mas deve explicar o porquê da escolha.
