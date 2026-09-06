@@ -46,6 +46,7 @@ Schema do banco (ver `src/TuttiWallet.Migrator/Scripts`): `users`, `categories` 
 - Essa convenção segue a mesma lógica do idioma no código: vocabulário de domínio em português; termos de padrão/convenção (ex.: sufixo `Id` para chave estrangeira) podem permanecer como estão, sem misturar dentro do mesmo termo.
 - Nomes de scripts são em **português**, escritos em **PascalCase**. Os nomes devem ser significativos — evite abreviações que não sejam óbvias.
 - O nome deve ser gerado no formato: Script000xNomeScript
+- **Tipo do Id**: tabelas de domínio/lookup (lista fixa e pequena de valores, ex.: `TiposTransacao` com Receita/Despesa) usam `Id` `smallint` (ou `integer` se a cardinalidade justificar), semeado via `INSERT` no próprio script de criação. Tabelas normais (guardam dados reais de usuário, ex.: `Usuarios`, `Categorias`, `Transacoes`) continuam com `Id` `uuid`, gerado em código antes do insert (não `serial`/`identity` do banco).
 
 > **Pendente**: o schema atual (`users`, `categories`, `parent_category_id`, `transactions`) ainda está em inglês/snake_case, criado antes desta convenção. A migração dessas tabelas para o novo padrão está planejada como uma refatoração futura, ainda não iniciada — não renomeie tabelas existentes sem que essa refatoração seja pedida explicitamente.
 

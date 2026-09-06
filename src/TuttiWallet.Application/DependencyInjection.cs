@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using TuttiWallet.Application.Autenticacao;
+using TuttiWallet.Application.Categorias;
 using TuttiWallet.Application.Usuarios;
 
 namespace TuttiWallet.Application;
@@ -10,6 +11,7 @@ public static class DependencyInjection
     {
         services.AddScoped<CadastrarPrimeiroUsuarioUseCase>();
         services.AddScoped<AutenticarUsuarioUseCase>();
+        services.AddScoped<CadastrarCategoriaUseCase>();
 
         return services;
     }
