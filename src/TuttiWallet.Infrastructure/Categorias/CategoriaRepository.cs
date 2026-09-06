@@ -24,6 +24,23 @@ public sealed class CategoriaRepository(NpgsqlDataSource dataSource) : ICategori
             : new Categoria(registro.Id, registro.UsuarioId, registro.Nome, (TipoTransacao)registro.TipoId, registro.CategoriaPaiId);
     }
 
+    public async Task<IReadOnlyList<Categoria>> ObterSubcategoriasAsync(Guid usuarioId, Guid categoriaPaiId)
+    {
+        await using var conexao = await dataSource.OpenConnectionAsync();
+
+        var registros = await conexao.QueryAsync<CategoriaRegistro>(
+            """
+            SELECT Id, UsuarioId, Nome, TipoId, CategoriaPaiId
+            FROM Categorias
+            WHERE UsuarioId = @UsuarioId AND CategoriaPaiId = @CategoriaPaiId;
+            """,
+            new { UsuarioId = usuarioId, CategoriaPaiId = categoriaPaiId });
+
+        return registros
+            .Select(registro => new Categoria(registro.Id, registro.UsuarioId, registro.Nome, (TipoTransacao)registro.TipoId, registro.CategoriaPaiId))
+            .ToList();
+    }
+
     public async Task<IReadOnlyList<string>> ObterNomesPorPaiAsync(Guid usuarioId, Guid? categoriaPaiId)
     {
         await using var conexao = await dataSource.OpenConnectionAsync();

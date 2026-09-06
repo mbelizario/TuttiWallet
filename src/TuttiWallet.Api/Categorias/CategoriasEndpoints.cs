@@ -1,7 +1,9 @@
 using System.Security.Claims;
 using TuttiWallet.Application.Categorias;
 using TuttiWallet.Application.Categorias.Cadastro;
+using TuttiWallet.Application.Categorias.Consulta;
 using TuttiWallet.Contracts.Categorias;
+using TuttiWallet.Domain;
 
 namespace TuttiWallet.Api.Categorias;
 
@@ -10,6 +12,7 @@ public static class CategoriasEndpoints
     public static IEndpointRouteBuilder MapCategoriasEndpoints(this IEndpointRouteBuilder app)
     {
         app.MapPost("/api/categorias", CriarCategoriaAsync).RequireAuthorization();
+        app.MapGet("/api/categorias/{id:guid}", ConsultarCategoriaPorIdAsync).RequireAuthorization();
 
         return app;
     }
@@ -40,4 +43,39 @@ public static class CategoriasEndpoints
             _ => TypedResults.Problem()
         };
     }
+
+    private static async Task<IResult> ConsultarCategoriaPorIdAsync(
+        Guid id,
+        ClaimsPrincipal usuarioLogado,
+        ConsultarCategoriaPorIdUseCase useCase)
+    {
+        var usuarioId = Guid.Parse(usuarioLogado.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+        var comando = new ConsultarCategoriaPorIdComando
+        {
+            UsuarioId = usuarioId,
+            CategoriaId = id
+        };
+
+        var resultado = await useCase.ExecutarAsync(comando);
+
+        return resultado.Status switch
+        {
+            StatusConsultaCategoriaPorId.Sucesso => TypedResults.Ok(MapearParaResponse(resultado.Categoria!, resultado.Subcategorias)),
+            StatusConsultaCategoriaPorId.NaoEncontrada => TypedResults.NotFound(),
+            _ => TypedResults.Problem()
+        };
+    }
+
+    private static CategoriaDetalheResponse MapearParaResponse(Categoria categoria, IReadOnlyList<Categoria> subcategorias) =>
+        new()
+        {
+            Id = categoria.Id,
+            Nome = categoria.Nome,
+            TipoId = (int)categoria.Tipo,
+            CategoriaPaiId = categoria.CategoriaPaiId,
+            Subcategorias = categoria.CategoriaPaiId is null
+                ? subcategorias.Select(subcategoria => new SubcategoriaResponse { Id = subcategoria.Id, Nome = subcategoria.Nome }).ToList()
+                : null
+        };
 }
