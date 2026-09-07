@@ -1,3 +1,4 @@
+using Dapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
@@ -20,6 +21,8 @@ public static class DependencyInjection
         string connectionString,
         IConfiguration configuration)
     {
+        SqlMapper.AddTypeHandler(new DateOnlyTypeHandler());
+
         services.AddSingleton(_ => NpgsqlDataSource.Create(connectionString));
 
         services.AddHealthChecks()
