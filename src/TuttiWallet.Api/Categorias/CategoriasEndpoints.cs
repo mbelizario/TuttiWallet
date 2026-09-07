@@ -3,6 +3,7 @@ using TuttiWallet.Application.Categorias;
 using TuttiWallet.Application.Categorias.Cadastro;
 using TuttiWallet.Application.Categorias.Consulta;
 using TuttiWallet.Application.Categorias.Edicao;
+using TuttiWallet.Application.Categorias.Exclusao;
 using TuttiWallet.Application.Categorias.Listagem;
 using TuttiWallet.Contracts.Categorias;
 using TuttiWallet.Domain;
@@ -17,6 +18,7 @@ public static class CategoriasEndpoints
         app.MapGet("/api/categorias/{id:guid}", ConsultarCategoriaPorIdAsync).RequireAuthorization();
         app.MapGet("/api/categorias", ListarCategoriasAsync).RequireAuthorization();
         app.MapPut("/api/categorias/{id:guid}", EditarCategoriaAsync).RequireAuthorization();
+        app.MapDelete("/api/categorias/{id:guid}", ExcluirCategoriaAsync).RequireAuthorization();
 
         return app;
     }
@@ -72,6 +74,30 @@ public static class CategoriasEndpoints
             StatusEdicaoCategoria.Sucesso => TypedResults.NoContent(),
             StatusEdicaoCategoria.NaoEncontrada => TypedResults.NotFound(),
             StatusEdicaoCategoria.DadosInvalidos => TypedResults.ValidationProblem(resultado.Erros),
+            _ => TypedResults.Problem()
+        };
+    }
+
+    private static async Task<IResult> ExcluirCategoriaAsync(
+        Guid id,
+        ClaimsPrincipal usuarioLogado,
+        ExcluirCategoriaUseCase useCase)
+    {
+        var usuarioId = Guid.Parse(usuarioLogado.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+        var comando = new ExcluirCategoriaComando
+        {
+            UsuarioId = usuarioId,
+            CategoriaId = id
+        };
+
+        var resultado = await useCase.ExecutarAsync(comando);
+
+        return resultado.Status switch
+        {
+            StatusExclusaoCategoria.Sucesso => TypedResults.NoContent(),
+            StatusExclusaoCategoria.NaoEncontrada => TypedResults.NotFound(),
+            StatusExclusaoCategoria.DadosInvalidos => TypedResults.ValidationProblem(resultado.Erros),
             _ => TypedResults.Problem()
         };
     }

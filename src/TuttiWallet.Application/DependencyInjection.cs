@@ -4,6 +4,7 @@ using TuttiWallet.Application.Categorias;
 using TuttiWallet.Application.Categorias.Cadastro;
 using TuttiWallet.Application.Categorias.Consulta;
 using TuttiWallet.Application.Categorias.Edicao;
+using TuttiWallet.Application.Categorias.Exclusao;
 using TuttiWallet.Application.Categorias.Listagem;
 using TuttiWallet.Application.Usuarios;
 using TuttiWallet.Application.Usuarios.Cadastro;
@@ -20,6 +21,7 @@ public static class DependencyInjection
         services.AddScoped<ConsultarCategoriaPorIdUseCase>();
         services.AddScoped<ListarCategoriasUseCase>();
         services.AddScoped<EditarCategoriaUseCase>();
+        services.AddScoped<ExcluirCategoriaUseCase>();
 
         return services;
     }
