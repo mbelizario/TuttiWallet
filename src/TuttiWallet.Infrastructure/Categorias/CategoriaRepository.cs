@@ -15,7 +15,7 @@ public sealed class CategoriaRepository(NpgsqlDataSource dataSource) : ICategori
             """
             SELECT Id, UsuarioId, Nome, TipoId, CategoriaPaiId
             FROM Categorias
-            WHERE Id = @Id AND UsuarioId = @UsuarioId;
+            WHERE Id = @Id AND UsuarioId = @UsuarioId AND ExcluidoEm IS NULL;
             """,
             new { Id = id, UsuarioId = usuarioId });
 
@@ -32,7 +32,7 @@ public sealed class CategoriaRepository(NpgsqlDataSource dataSource) : ICategori
             """
             SELECT Id, UsuarioId, Nome, TipoId, CategoriaPaiId
             FROM Categorias
-            WHERE UsuarioId = @UsuarioId AND CategoriaPaiId = @CategoriaPaiId;
+            WHERE UsuarioId = @UsuarioId AND CategoriaPaiId = @CategoriaPaiId AND ExcluidoEm IS NULL;
             """,
             new { UsuarioId = usuarioId, CategoriaPaiId = categoriaPaiId });
 
@@ -49,7 +49,7 @@ public sealed class CategoriaRepository(NpgsqlDataSource dataSource) : ICategori
             """
             SELECT Nome
             FROM Categorias
-            WHERE UsuarioId = @UsuarioId AND CategoriaPaiId IS NOT DISTINCT FROM @CategoriaPaiId;
+            WHERE UsuarioId = @UsuarioId AND CategoriaPaiId IS NOT DISTINCT FROM @CategoriaPaiId AND ExcluidoEm IS NULL;
             """,
             new { UsuarioId = usuarioId, CategoriaPaiId = categoriaPaiId });
 
@@ -100,7 +100,7 @@ public sealed class CategoriaRepository(NpgsqlDataSource dataSource) : ICategori
         await using var conexao = await dataSource.OpenConnectionAsync();
 
         return await conexao.QuerySingleAsync<int>(
-            "SELECT COUNT(*) FROM Categorias WHERE UsuarioId = @UsuarioId;",
+            "SELECT COUNT(*) FROM Categorias WHERE UsuarioId = @UsuarioId AND ExcluidoEm IS NULL;",
             new { UsuarioId = usuarioId });
     }
 
@@ -112,7 +112,7 @@ public sealed class CategoriaRepository(NpgsqlDataSource dataSource) : ICategori
             """
             SELECT Id, UsuarioId, Nome, TipoId, CategoriaPaiId
             FROM Categorias
-            WHERE UsuarioId = @UsuarioId
+            WHERE UsuarioId = @UsuarioId AND ExcluidoEm IS NULL
             ORDER BY Nome
             OFFSET @Deslocamento LIMIT @TamanhoPagina;
             """,
@@ -121,6 +121,19 @@ public sealed class CategoriaRepository(NpgsqlDataSource dataSource) : ICategori
         return registros
             .Select(registro => new Categoria(registro.Id, registro.UsuarioId, registro.Nome, (TipoTransacao)registro.TipoId, registro.CategoriaPaiId))
             .ToList();
+    }
+
+    public async Task ExcluirAsync(Guid id, Guid usuarioId)
+    {
+        await using var conexao = await dataSource.OpenConnectionAsync();
+
+        await conexao.ExecuteAsync(
+            """
+            UPDATE Categorias
+            SET ExcluidoEm = now()
+            WHERE Id = @Id AND UsuarioId = @UsuarioId;
+            """,
+            new { Id = id, UsuarioId = usuarioId });
     }
 
     private sealed class CategoriaRegistro
