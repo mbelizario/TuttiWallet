@@ -135,8 +135,8 @@ public class ExcluirCategoriaTests(ApiWebApplicationFactory factory)
         await conexao.OpenAsync();
         await conexao.ExecuteAsync(
             """
-            INSERT INTO Transacoes (Id, UsuarioId, CategoriaId, Tipo, Valor, DataOcorrencia)
-            VALUES (@Id, @UsuarioId, @CategoriaId, 'despesa', 50, CURRENT_DATE);
+            INSERT INTO Transacoes (Id, UsuarioId, CategoriaId, Valor, DataOcorrencia, Descricao)
+            VALUES (@Id, @UsuarioId, @CategoriaId, 50, CURRENT_DATE, 'Transação de teste');
             """,
             new { Id = Guid.NewGuid(), UsuarioId = usuario!.Id, CategoriaId = categoriaId });
     }

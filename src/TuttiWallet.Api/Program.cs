@@ -1,9 +1,11 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using TuttiWallet.Api.Autenticacao;
 using TuttiWallet.Api.Categorias;
+using TuttiWallet.Api.Transacoes;
 using TuttiWallet.Api.Usuarios;
 using TuttiWallet.Application;
 using TuttiWallet.Infrastructure;
@@ -50,6 +52,23 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+app.UseExceptionHandler(exceptionHandlerApp => exceptionHandlerApp.Run(async context =>
+{
+    var excecao = context.Features.Get<IExceptionHandlerFeature>()?.Error;
+
+    var (statusCode, titulo) = excecao is BadHttpRequestException
+        ? (StatusCodes.Status400BadRequest, "Não foi possível interpretar os dados enviados na requisição.")
+        : (StatusCodes.Status500InternalServerError, "Ocorreu um erro inesperado. Tente novamente mais tarde.");
+
+    if (statusCode == StatusCodes.Status500InternalServerError)
+    {
+        var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+        logger.LogError(excecao, "Erro não tratado ao processar a requisição.");
+    }
+
+    await Results.Problem(title: titulo, statusCode: statusCode).ExecuteAsync(context);
+}));
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -65,6 +84,7 @@ app.MapHealthChecks("/health");
 app.MapUsuariosEndpoints();
 app.MapAutenticacaoEndpoints();
 app.MapCategoriasEndpoints();
+app.MapTransacoesEndpoints();
 
 app.Run();
 
