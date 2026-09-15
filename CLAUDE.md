@@ -128,6 +128,26 @@ Nesses três pontos, o agente pode se afastar da preferência quando segui-la à
 - Classes de entrada (`Program.cs` de qualquer projeto, `Main`, top-level statements) não devem crescer desorganizadas: ao adicionar lógica nova a elas, avalie extrair para um método de extensão (ou classe auxiliar, se não fizer sentido como extensão) em vez de acumular código inline.
 - Arquivos devem ser organizados primeiro por feature e, quando houver mais de um assunto, por caso de uso ou assunto dentro da feature (ex.: `Categorias/Cadastro`). Interfaces e contratos compartilhados por mais de um caso de uso devem permanecer na raiz da feature.
 
+## Git e Pull Requests
+
+O agente é responsável por criar branches, commits e Pull Requests — não apenas pelo código.
+
+- **Branches**: criadas a partir de `preprod` (a represa de tarefas para a próxima versão). Nome padronizado: prefixo `feat/` (melhoria) ou `bug/` (correção), seguido de palavras separadas por hífen que indiquem o que foi feito. Ex.: `feat/cadastro-transacoes`, `feat/edicao-categorias`, `bug/erro-ao-editar-usuarios`.
+- **Commits**: pequenos, cada um representando a finalização de uma etapa do desenvolvimento (não um WIP genérico) e fazendo sentido por si só. Mensagem significativa e em português do Brasil.
+- **Pull Requests**: abertos para a branch `preprod` (nunca direto para `main`), automaticamente ao concluir o caso de uso.
+  - Título: prefixo `Preprod - ` seguido de um título significativo para a demanda.
+  - Corpo: apenas o link do card do Trello correspondente (o card é enviado pelo autor no início da conversa).
+  - Label: a label correspondente ao tipo da branch — `Melhoria` para branches `feat/`, `bug` para branches `bug/`.
+- Esta seção não dispensa as regras da seção [Fluxo de trabalho](#fluxo-de-trabalho) abaixo: discutir decisões de implementação antes de codar continua valendo — o que muda é que, uma vez o caso de uso pronto e aprovado, o agente cuida da mecânica de branch/commit/PR sem precisar de um pedido explícito a cada etapa.
+
+### Revisão de código via GitHub (integração @claude)
+
+O repositório tem o [Claude GitHub App](https://github.com/apps/claude) instalado, com workflow em `.github/workflows/claude.yml` (credencial: secret `CLAUDE_CODE_OAUTH_TOKEN`, usa a cota da assinatura Claude do autor).
+
+- O autor revisa os PRs diretamente no GitHub, deixando comentários inline no código.
+- Para que um comentário de review vire uma ação automática (o agente lê o comentário e faz push da correção na mesma branch do PR), o comentário precisa mencionar **`@claude`** explicitamente — clicar em "Request Changes" sozinho, sem menção, não dispara nada.
+- Cada rodada nova de feedback precisa de uma nova menção `@claude` — não há loop automático de revisão contínua.
+
 ## Limites — exigem autorização explícita antes de agir
 
 - **Scripts de migração já aplicados** (`src/TuttiWallet.Migrator/Scripts`): avisar antes de alterar um script existente — o padrão é criar um novo script, não editar um já aplicado.
@@ -141,5 +161,5 @@ Este é o primeiro projeto do autor usando um agente de IA para desenvolvimento.
 - **Discuta antes de implementar, inclusive em decisões menores** — não só arquiteturais (nova dependência entre camadas, biblioteca, schema), mas também escolhas menores de implementação (ex.: nome de uma tabela nova, formato de um endpoint). Prefira perguntar a assumir.
 - **Explique o porquê** de uma abordagem, não só a aplique — o objetivo do projeto é aprender, não apenas ter o código pronto.
 - **Construa por caso de uso completo**: implemente todas as camadas envolvidas em um caso de uso (Domain → Application → Infrastructure → Api) e pare para revisão antes de seguir para o próximo caso de uso. Não gere múltiplos casos de uso de uma vez.
-- O autor pretende abrir Pull Requests no GitHub para revisar o código formalmente — estruture o trabalho em unidades que façam sentido como um PR coeso (um caso de uso por PR).
+- O agente abre os Pull Requests no GitHub (ver [Git e Pull Requests](#git-e-pull-requests)) para o autor revisar formalmente — estruture o trabalho em unidades que façam sentido como um PR coeso (um caso de uso por PR).
 - Priorize pequenas melhorias que facilitem o code review, em vez de mudanças grandes e difíceis de revisar.
