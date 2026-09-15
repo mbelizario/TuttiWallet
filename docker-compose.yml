@@ -16,6 +16,17 @@ services:
       timeout: 5s
       retries: 10
 
+  seq:
+    image: datalust/seq:latest
+    restart: unless-stopped
+    environment:
+      ACCEPT_EULA: Y
+      SEQ_FIRSTRUN_ADMINPASSWORD: ${SEQ_ADMIN_PASSWORD}
+    volumes:
+      - seq-data:/data
+    ports:
+      - "${SEQ_HTTP_PORT}:80"
+
   migrator:
     build:
       context: .
@@ -35,6 +46,7 @@ services:
       ConnectionStrings__Postgres: Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
       Cors__AllowedOrigins__0: http://localhost:${WEB_HTTP_PORT}
       Jwt__Chave: ${JWT_CHAVE}
+      Seq__Url: http://seq:80
     ports:
       - "${API_HTTP_PORT}:8080"
     depends_on:
@@ -42,6 +54,8 @@ services:
         condition: service_healthy
       migrator:
         condition: service_completed_successfully
+      seq:
+        condition: service_started
 
   web:
     build:
@@ -57,3 +71,4 @@ services:
 
 volumes:
   postgres-data:
+  seq-data:
