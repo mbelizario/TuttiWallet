@@ -114,6 +114,7 @@ public class CriarTransacaoTests(ApiWebApplicationFactory factory)
         var corpo = await response.Content.ReadAsStringAsync();
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        corpo.Should().NotBeNullOrEmpty();
         corpo.Should().NotContain("Exception");
         corpo.Should().NotContain("StackTrace");
         corpo.Should().NotContain("System.Text.Json");
