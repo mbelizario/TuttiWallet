@@ -1,0 +1,174 @@
+# TuttiWallet
+
+Sistema de controle financeiro pessoal: lançamentos de receitas e despesas, organizados em categorias e subcategorias, com login por usuário.
+
+Objetivos do projeto (relevantes para as decisões técnicas abaixo): portfólio público no GitHub, uso pessoal em home-server via Docker, e estudo de Clean Architecture, testes automatizados e DevOps por parte do autor.
+
+Este arquivo é a fonte única de instruções para qualquer agente de IA (Claude Code, Codex, Cursor, Copilot etc.). O `CLAUDE.md` apenas o importa.
+
+## Antes de abrir um PR (obrigatório)
+
+Rode, na raiz do repositório, e só abra o PR com tudo verde — o CI executa exatamente os mesmos passos:
+
+```
+dotnet build TuttiWallet.slnx --configuration Release
+dotnet test TuttiWallet.slnx --configuration Release
+dotnet format TuttiWallet.slnx --verify-no-changes
+```
+
+- `dotnet format ... --verify-no-changes` só verifica; para corrigir, rode `dotnet format TuttiWallet.slnx` e commite o resultado.
+- Os testes de integração da API precisam de Docker rodando (sobem um Postgres via Testcontainers automaticamente — não é preciso configurar nada à mão).
+- Para rodar um único projeto de teste: `dotnet test tests/TuttiWallet.Domain.Tests`.
+
+## Stack
+
+- **Backend**: C# / ASP.NET Core (.NET 10), Minimal APIs.
+- **Acesso a dados**: Dapper + Npgsql. Sem EF Core de propósito — decisão consciente para não esconder o SQL.
+- **Banco de dados**: PostgreSQL.
+- **Migrações**: DbUp, com scripts SQL puros em `src/TuttiWallet.Migrator/Scripts`, rodados por um serviço `migrator` separado (console app) antes da API subir.
+- **Frontend**: Blazor WebAssembly standalone (`src/TuttiWallet.Web`), consumindo a API via HTTP — não é Blazor Server. Tratado como um client desacoplado, do mesmo jeito que um SPA em React trataria a API.
+- **Autenticação**: JWT implementado à mão (sem ASP.NET Identity completo, sem OAuth externo). Hash de senha via `Microsoft.Extensions.Identity.Core` (`PasswordHasher<T>`).
+- **Testes**: xUnit + FluentAssertions. Testes de integração da API usam `Testcontainers.PostgreSql` (sobe um Postgres real em container, não mocka o banco).
+- **Containers**: Docker + docker-compose. Todo o sistema (Postgres, migrator, API, Web) sobe com um único `docker compose up`.
+
+## Estrutura e regra de dependência
+
+```
+src/
+  TuttiWallet.Domain/           entidades e regras de negócio — não depende de nada
+  TuttiWallet.Application/      casos de uso, interfaces de repositório — depende só de Domain
+  TuttiWallet.Infrastructure/   Dapper, Npgsql, JWT, hashing — depende de Application + Domain
+  TuttiWallet.Contracts/        DTOs de request/response compartilhados entre Api e Web
+  TuttiWallet.Migrator/         console app, roda os scripts DbUp
+  TuttiWallet.Api/              host ASP.NET Core (Minimal API) — depende de Application + Infrastructure + Contracts
+  TuttiWallet.Web/               Blazor WebAssembly — depende só de Contracts
+tests/
+  TuttiWallet.Domain.Tests/
+  TuttiWallet.Application.Tests/
+  TuttiWallet.Api.IntegrationTests/
+```
+
+Regra: as setas de dependência (`ProjectReference`) só podem apontar para dentro (`Api`/`Web` → `Application`/`Infrastructure`/`Contracts` → `Domain`), nunca o contrário. `Domain` nunca referencia nenhum outro projeto do repositório. Ao adicionar código, respeite essa direção — é o ponto central do que este projeto está estudando.
+
+Schema do banco (ver `src/TuttiWallet.Migrator/Scripts`): `users`, `categories` (com `parent_category_id` auto-relacionado — a mesma tabela cobre categoria e subcategoria) e `transactions`.
+
+## Banco de dados
+
+### Convenção de nomenclatura
+
+- Nomes de tabelas e colunas são em **português**, escritos em **PascalCase** (ex.: `Usuarios`, `Categorias`, `CategoriaPaiId`, `Transacoes`).
+- Identificadores **não são citados** com aspas duplas no SQL (`CREATE TABLE Usuarios`, não `CREATE TABLE "Usuarios"`). O Postgres converte identificador não citado para minúsculas automaticamente, tanto na criação quanto em qualquer query futura — então tudo continua batendo sem precisar de aspas. Aspas duplas só entram em cena se for necessário preservar case exato, o que não é o caso aqui.
+- Assim como no código, os nomes devem ser significativos — evite abreviações que não sejam óbvias.
+- Essa convenção segue a mesma lógica do idioma no código: vocabulário de domínio em português; termos de padrão/convenção (ex.: sufixo `Id` para chave estrangeira) podem permanecer como estão, sem misturar dentro do mesmo termo.
+- Nomes de scripts são em **português**, escritos em **PascalCase**. Os nomes devem ser significativos — evite abreviações que não sejam óbvias.
+- O nome deve ser gerado no formato: Script000xNomeScript
+- **Tipo do Id**: tabelas de domínio/lookup (lista fixa e pequena de valores, ex.: `TiposTransacao` com Receita/Despesa) usam `Id` `smallint` (ou `integer` se a cardinalidade justificar), semeado via `INSERT` no próprio script de criação. Tabelas normais (guardam dados reais de usuário, ex.: `Usuarios`, `Categorias`, `Transacoes`) continuam com `Id` `uuid`, gerado em código antes do insert (não `serial`/`identity` do banco).
+
+> **Pendente**: o schema atual (`users`, `categories`, `parent_category_id`, `transactions`) ainda está em inglês/snake_case, criado antes desta convenção. A migração dessas tabelas para o novo padrão está planejada como uma refatoração futura, ainda não iniciada — não renomeie tabelas existentes sem que essa refatoração seja pedida explicitamente.
+
+## Como rodar
+
+**Via Docker (recomendado, replica o ambiente de produção/home-server):**
+```
+cp .env.example .env
+docker compose up --build
+```
+API fica em `http://localhost:8080` (porta configurável em `.env`), Web em `http://localhost:8081`.
+
+**Localmente, sem Docker (dev do dia a dia):**
+- Suba um Postgres local (ou use `docker compose up postgres`).
+- Rode o migrator apontando `CONNECTION_STRING` para esse Postgres.
+- Configure a connection string da API via User Secrets (ver seção [Segredos e configuração](#segredos-e-configuração) abaixo) antes do primeiro `dotnet run`.
+- `dotnet run --project src/TuttiWallet.Api`
+- `dotnet run --project src/TuttiWallet.Web`
+
+## Segredos e configuração
+
+- **Nenhum segredo real (senha, connection string, chave JWT) deve ir para arquivos commitados** (`appsettings.json`, `appsettings.Development.json`, etc.). Esses arquivos só têm placeholders vazios (ex.: `"ConnectionStrings": { "Postgres": "" }`).
+- **Fluxo Docker**: os valores reais vêm do `.env` (baseado em `.env.example`, gitignorado — ver `*.env` no `.gitignore`), injetados como variáveis de ambiente no `docker-compose.yml` (`ConnectionStrings__Postgres`, etc.), que o ASP.NET Core sobrescreve por cima do `appsettings.json` automaticamente.
+- **Fluxo local sem Docker**: os valores reais vêm do **.NET User Secrets**, builtin do ASP.NET Core (carregado automaticamente pelo `WebApplication.CreateBuilder` quando `ASPNETCORE_ENVIRONMENT=Development`), guardados fora do repositório em `%APPDATA%\Microsoft\UserSecrets\{UserSecretsId}\secrets.json`. Configuração inicial (uma vez por máquina), a partir de `src/TuttiWallet.Api`:
+  ```
+  dotnet user-secrets set "ConnectionStrings:Postgres" "Host=localhost;Port=5432;Database=tuttiwallet;Username=<usuario>;Password=<senha>"
+  ```
+  (o `UserSecretsId` já está registrado no `TuttiWallet.Api.csproj`; não precisa rodar `dotnet user-secrets init` de novo.)
+- **Por que User Secrets em vez de ler o `.env` também na API**: o ASP.NET Core não lê arquivos `.env` nativamente — exigiria um pacote NuGet extra (ex.: `DotNetEnv`) só para isso. User Secrets é a ferramenta idiomática do próprio framework para segredos de desenvolvimento local, sem dependência nova.
+- Agentes: nunca leia nem exiba o conteúdo do `.env` ou dos User Secrets; use o `.env.example` como referência das chaves existentes.
+
+## Convenções
+
+### Idioma: português vs. inglês
+
+- **Vocabulário de domínio** — nomes de classes, métodos, variáveis, atributos e pastas de domínio — é sempre em **português**, sem misturar idiomas dentro do mesmo termo. Exemplos: `Categoria`, `Transacao`, `ObterPorIdAsync`, `valorTotal`.
+- **Termos de arquitetura/padrão** (Clean Architecture e padrões de projeto) ficam em **inglês**, mesmo quando aparecem como sufixo colado a um nome de domínio em português: `Domain`, `Application`, `Infrastructure`, `Repository`, `Service`, `Controller`. É por isso que `CategoriaRepository` e `CategoriaService` estão corretos — o termo de domínio (`Categoria`) está em pt-br, o termo de padrão (`Repository`/`Service`) está em inglês, e cada um mantém seu idioma inteiro.
+- O que não pode acontecer é picotar um único termo entre os dois idiomas (ex.: `CategoryRepositorio` está errado — ou o termo é de domínio e vai inteiro em português, ou é de convenção e vai inteiro em inglês).
+- Mensagens de exceção e validação voltadas ao usuário final são em português.
+
+### Nomenclatura — regras fixas (sem exceção)
+
+| Ação | Prefixo do método |
+|---|---|
+| Buscar/obter dado (banco ou outra fonte) | `Obter` |
+| Inserir dado | `Inserir` |
+| Atualizar dado | `Atualizar` |
+| Excluir dado | `Excluir` |
+
+- Nomes de métodos sempre iniciam com um verbo no infinitivo (ex.: `Obter`, `Inserir`, `Garantir`, `Validar`) — nunca no gerúndio, particípio ou como substantivo.
+- Nomes de classes, métodos e atributos em PascalCase; nomes de variáveis em camelCase.
+- Nomes de classes iniciam preferencialmente com um substantivo.
+- Métodos assíncronos têm sufixo `Async`; sempre que possível e necessário, escreva métodos assíncronos.
+- Nomes de métodos de teste seguem a mesma convenção de nomenclatura dos métodos comuns (PascalCase, significativos, em português) — sem um padrão fixo do tipo `Metodo_Cenario_Resultado`.
+- Todos os nomes (classes, métodos, variáveis) devem ser significativos.
+
+### Nomenclatura e estilo — negociáveis (podem ceder num caso concreto e justificado)
+
+- Preferência por "early return" em vez de aninhamento.
+- Preferência por evitar `else`, priorizando if + early return.
+- Quando um `if` ou outro condicional tiver uma única instrução, prefira omitir as chaves; mantenha-as quando a omissão prejudicar a legibilidade.
+- Responsabilidade única por método.
+
+Nesses três pontos, o agente pode se afastar da preferência quando segui-la à risca tornaria o código pior ou mais confuso — mas deve explicar o porquê da escolha.
+
+### Estilo geral
+
+- Sem comentários explicando o óbvio; comentário só quando o código não consegue explicar o "porquê" sozinho.
+- Entidades de domínio validam seus próprios invariantes no construtor (ver `TuttiWallet.Domain`) em vez de aceitar estado inválido e validar depois.
+- DTOs de request/response ficam em `TuttiWallet.Contracts`, com sufixo `Request`/`Response` (ex.: `CriarCategoriaRequest`, `CategoriaResponse`). Nunca expor entidades de `Domain` diretamente pela API.
+- Métodos devem ser pequenos e testáveis.
+- Classes de entrada (`Program.cs` de qualquer projeto, `Main`, top-level statements) não devem crescer desorganizadas: ao adicionar lógica nova a elas, avalie extrair para um método de extensão (ou classe auxiliar, se não fizer sentido como extensão) em vez de acumular código inline.
+- Arquivos devem ser organizados primeiro por feature e, quando houver mais de um assunto, por caso de uso ou assunto dentro da feature (ex.: `Categorias/Cadastro`). Interfaces e contratos compartilhados por mais de um caso de uso devem permanecer na raiz da feature.
+
+## Git e Pull Requests
+
+O agente é responsável por criar branches, commits e Pull Requests — não apenas pelo código.
+
+- **Branches**: criadas a partir de `preprod` (a represa de tarefas para a próxima versão). Nome padronizado: prefixo `feat/` (melhoria) ou `bug/` (correção), seguido de palavras separadas por hífen que indiquem o que foi feito. Ex.: `feat/cadastro-transacoes`, `feat/edicao-categorias`, `bug/erro-ao-editar-usuarios`.
+- **Commits**: pequenos, cada um representando a finalização de uma etapa do desenvolvimento (não um WIP genérico) e fazendo sentido por si só. Mensagem significativa e em português do Brasil.
+- **Pull Requests**: abertos para a branch `preprod` (nunca direto para `main`), automaticamente ao concluir o caso de uso.
+  - Título: prefixo `Preprod - ` seguido de um título significativo para a demanda.
+  - Corpo: apenas o link do card do Trello correspondente (o card é enviado pelo autor no início da conversa).
+  - Label: a label correspondente ao tipo da branch — `Melhoria` para branches `feat/`, `bug` para branches `bug/`.
+- O fluxo de trabalho abaixo continua valendo: discutir decisões de implementação antes de codar — o que muda é que, uma vez o caso de uso pronto e aprovado, o agente cuida da mecânica de branch/commit/PR sem precisar de um pedido explícito a cada etapa.
+
+### Revisão de código via GitHub (integração @claude)
+
+O repositório tem o [Claude GitHub App](https://github.com/apps/claude) instalado, com workflow em `.github/workflows/claude.yml` (credencial: secret `CLAUDE_CODE_OAUTH_TOKEN`, usa a cota da assinatura Claude do autor).
+
+- O autor revisa os PRs diretamente no GitHub, deixando comentários inline no código.
+- Para que um comentário de review vire uma ação automática (o agente lê o comentário e faz push da correção na mesma branch do PR), o comentário precisa mencionar **`@claude`** explicitamente — clicar em "Request Changes" sozinho, sem menção, não dispara nada.
+- Cada rodada nova de feedback precisa de uma nova menção `@claude` — não há loop automático de revisão contínua.
+
+## Limites — exigem autorização explícita do autor antes de agir
+
+- **Scripts de migração já aplicados** (`src/TuttiWallet.Migrator/Scripts`): avisar antes de alterar um script existente — o padrão é criar um novo script, não editar um já aplicado.
+- **Comandos destrutivos** (ex.: `docker compose down -v`, `DROP TABLE`, reset de banco): nunca executar sem autorização explícita do autor no momento.
+- **Novas dependências/pacotes** (NuGet ou outros): sempre perguntar antes de instalar.
+
+## Fluxo de trabalho (política de autonomia definida pelo autor)
+
+Esta seção descreve como o autor quer colaborar com agentes, e vale para **qualquer** agente, independentemente da ferramenta. O autor tem 8 anos de experiência em .NET/Dapper, mas está estudando conceitos novos (arquitetura em camadas, DevOps, testes) e quer manter controle alto sobre o que é codado. Por isso:
+
+- **Discuta antes de implementar, inclusive em decisões menores** — não só arquiteturais (nova dependência entre camadas, biblioteca, schema), mas também escolhas menores de implementação (ex.: nome de uma tabela nova, formato de um endpoint). Prefira perguntar a assumir. Se o ambiente não permitir perguntar (agente não interativo), registre a decisão tomada e o motivo na descrição do PR.
+- **Explique o porquê** de uma abordagem, não só a aplique — o objetivo do projeto é aprender, não apenas ter o código pronto.
+- **Construa por caso de uso completo**: implemente todas as camadas envolvidas em um caso de uso (Domain → Application → Infrastructure → Api) e pare para revisão antes de seguir para o próximo caso de uso. Não gere múltiplos casos de uso de uma vez.
+- O agente abre os Pull Requests no GitHub (ver [Git e Pull Requests](#git-e-pull-requests)) para o autor revisar formalmente — estruture o trabalho em unidades que façam sentido como um PR coeso (um caso de uso por PR).
+- Priorize pequenas melhorias que facilitem o code review, em vez de mudanças grandes e difíceis de revisar.
