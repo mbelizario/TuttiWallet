@@ -1,0 +1,16 @@
+name: Melhoria
+description: Nova funcionalidade ou ajuste
+labels: [Melhoria]
+body:
+  - type: textarea
+    id: objetivo
+    attributes:
+      label: Objetivo
+      description: O que deve passar a ser possível e por quê.
+    validations:
+      required: true
+  - type: textarea
+    id: criterios
+    attributes:
+      label: Critérios de aceite
+      description: Como saber que está pronto.
