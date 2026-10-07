@@ -11,6 +11,6 @@ Autenticação com JWT implementado à mão (geração e validação de tokens, 
 
 ## Consequências
 - Controle total do fluxo e do schema (`Usuarios`, `RefreshTokens`), sem as tabelas e abstrações do Identity.
-- **A confirmar**: motivação de aprendizado e escopo de uso pessoal, sem necessidade de login social.
+- Motivação de aprendizado e escopo de uso pessoal, sem necessidade de login social.
 - A chave de assinatura vem de configuração (`JWT_CHAVE` no `.env`; User Secrets localmente) e nunca é commitada.
 - Por ser código de segurança escrito à mão, mudanças aqui exigem atenção redobrada na revisão e testes automatizados.

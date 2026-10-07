@@ -11,5 +11,4 @@ Migrações com DbUp, usando scripts `.sql` puros em `src/TuttiWallet.Migrator/S
 
 ## Consequências
 - Scripts já aplicados são imutáveis: mudanças viram um novo script com o próximo número (`Script000xNomeScript`). O CI barra a edição de scripts existentes, salvo com a label `editar-script-aplicado`.
-- **A confirmar**: manter a migração fora do processo da API evita corridas entre várias instâncias e permite que a API suba com permissões reduzidas no banco.
 - Os testes de integração também usam o migrator para preparar o banco.
