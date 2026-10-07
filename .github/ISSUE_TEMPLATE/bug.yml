@@ -1,0 +1,23 @@
+name: Bug
+description: Algo não funciona como deveria
+labels: [bug]
+body:
+  - type: textarea
+    id: comportamento
+    attributes:
+      label: O que acontece
+      description: Descreva o comportamento atual e o esperado.
+    validations:
+      required: true
+  - type: textarea
+    id: reproducao
+    attributes:
+      label: Como reproduzir
+      description: Passos, requisição ou dados usados.
+    validations:
+      required: true
+  - type: textarea
+    id: contexto
+    attributes:
+      label: Contexto adicional
+      description: Logs, versão, ambiente (Docker ou local). Não cole segredos.
