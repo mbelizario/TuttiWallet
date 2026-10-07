@@ -62,11 +62,11 @@ public class CadastrarTransacaoUseCaseTests
 
     private CadastrarTransacaoComando ComandoValido(
         string descricao = "Supermercado", Guid? categoriaId = null) => new()
-    {
-        UsuarioId = _usuarioId,
-        CategoriaId = categoriaId ?? _categoria.Id,
-        Valor = 150.75m,
-        DataOcorrencia = new DateOnly(2026, 8, 8),
-        Descricao = descricao
-    };
+        {
+            UsuarioId = _usuarioId,
+            CategoriaId = categoriaId ?? _categoria.Id,
+            Valor = 150.75m,
+            DataOcorrencia = new DateOnly(2026, 8, 8),
+            Descricao = descricao
+        };
 }

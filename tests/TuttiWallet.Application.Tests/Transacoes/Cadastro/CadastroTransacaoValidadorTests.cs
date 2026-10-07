@@ -41,11 +41,11 @@ public class CadastroTransacaoValidadorTests
 
     private static CadastrarTransacaoComando ComandoValido(
         string descricao = "Supermercado", decimal valor = 100m) => new()
-    {
-        UsuarioId = Guid.NewGuid(),
-        CategoriaId = Guid.NewGuid(),
-        Valor = valor,
-        DataOcorrencia = new DateOnly(2026, 8, 8),
-        Descricao = descricao
-    };
+        {
+            UsuarioId = Guid.NewGuid(),
+            CategoriaId = Guid.NewGuid(),
+            Valor = valor,
+            DataOcorrencia = new DateOnly(2026, 8, 8),
+            Descricao = descricao
+        };
 }
