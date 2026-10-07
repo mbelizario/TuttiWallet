@@ -24,6 +24,9 @@ jobs:
       - name: Restore
         run: dotnet restore TuttiWallet.slnx
 
+      - name: Verificar formatação
+        run: dotnet format TuttiWallet.slnx --verify-no-changes --no-restore
+
       - name: Build
         run: dotnet build TuttiWallet.slnx --no-restore --configuration Release
 
