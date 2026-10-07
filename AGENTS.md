@@ -16,6 +16,7 @@ dotnet test TuttiWallet.slnx --configuration Release
 dotnet format TuttiWallet.slnx --verify-no-changes
 ```
 
+- Em `Release`, qualquer aviso de compilação vira erro (`Directory.Build.props`), inclusive violações de nomenclatura definidas no `.editorconfig` (interfaces com `I`, PascalCase/camelCase, sufixo `Async`). Corrija a causa; só suprima um aviso com justificativa em comentário e depois de avisar o autor.
 - `dotnet format ... --verify-no-changes` só verifica; para corrigir, rode `dotnet format TuttiWallet.slnx` e commite o resultado.
 - Os testes de integração da API precisam de Docker rodando (sobem um Postgres via Testcontainers automaticamente — não é preciso configurar nada à mão).
 - Para rodar um único projeto de teste: `dotnet test tests/TuttiWallet.Domain.Tests`.
@@ -49,6 +50,8 @@ tests/
 ```
 
 Regra: as setas de dependência (`ProjectReference`) só podem apontar para dentro (`Api`/`Web` → `Application`/`Infrastructure`/`Contracts` → `Domain`), nunca o contrário. `Domain` nunca referencia nenhum outro projeto do repositório. Ao adicionar código, respeite essa direção — é o ponto central do que este projeto está estudando.
+
+A regra é verificada por `tests/TuttiWallet.Architecture.Tests`, que lê os `ProjectReference` de cada `.csproj` de `src/`. Ao criar um projeto novo em `src/`, declare suas dependências permitidas em `RegraDeDependenciaTests`; o teste falha se um projeto de `src/` não estiver mapeado.
 
 Schema do banco (ver `src/TuttiWallet.Migrator/Scripts`): `users`, `categories` (com `parent_category_id` auto-relacionado — a mesma tabela cobre categoria e subcategoria) e `transactions`.
 

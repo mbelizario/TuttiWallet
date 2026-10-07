@@ -1,0 +1,55 @@
+root = true
+
+[*]
+charset = utf-8
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+
+[*.{csproj,props,targets,json,yml,yaml,slnx}]
+indent_size = 2
+
+[*.cs]
+dotnet_diagnostic.IDE1006.severity = warning
+
+# Nomenclatura (AGENTS.md > Convenções > Nomenclatura)
+
+# Interfaces começam com "I"
+dotnet_naming_rule.interfaces_com_prefixo_i.symbols = interfaces
+dotnet_naming_rule.interfaces_com_prefixo_i.style = prefixo_i
+dotnet_naming_rule.interfaces_com_prefixo_i.severity = warning
+dotnet_naming_symbols.interfaces.applicable_kinds = interface
+dotnet_naming_style.prefixo_i.required_prefix = I
+dotnet_naming_style.prefixo_i.capitalization = pascal_case
+
+# Tipos e membros em PascalCase
+dotnet_naming_rule.tipos_e_membros_em_pascal_case.symbols = tipos_e_membros
+dotnet_naming_rule.tipos_e_membros_em_pascal_case.style = pascal_case
+dotnet_naming_rule.tipos_e_membros_em_pascal_case.severity = warning
+dotnet_naming_symbols.tipos_e_membros.applicable_kinds = class, struct, enum, delegate, method, property, event
+dotnet_naming_symbols.tipos_e_membros.applicable_accessibilities = public, internal, protected, protected_internal, private_protected, private
+dotnet_naming_style.pascal_case.capitalization = pascal_case
+
+# Parâmetros e variáveis locais em camelCase
+dotnet_naming_rule.parametros_e_locais_em_camel_case.symbols = parametros_e_locais
+dotnet_naming_rule.parametros_e_locais_em_camel_case.style = camel_case
+dotnet_naming_rule.parametros_e_locais_em_camel_case.severity = warning
+dotnet_naming_symbols.parametros_e_locais.applicable_kinds = parameter, local
+dotnet_naming_style.camel_case.capitalization = camel_case
+
+# Métodos assíncronos terminam em "Async"
+dotnet_naming_rule.metodos_async_com_sufixo.symbols = metodos_async
+dotnet_naming_rule.metodos_async_com_sufixo.style = sufixo_async
+dotnet_naming_rule.metodos_async_com_sufixo.severity = warning
+dotnet_naming_symbols.metodos_async.applicable_kinds = method
+dotnet_naming_symbols.metodos_async.required_modifiers = async
+dotnet_naming_style.sufixo_async.required_suffix = Async
+dotnet_naming_style.sufixo_async.capitalization = pascal_case
+
+# Estilo (preferências negociáveis do AGENTS.md: ficam como sugestão, não quebram o build)
+csharp_prefer_braces = when_multiline:suggestion
+csharp_style_namespace_declarations = file_scoped:suggestion
+
+# Em testes o sufixo "Async" não é exigido nos métodos de teste
+[tests/**.cs]
+dotnet_naming_rule.metodos_async_com_sufixo.severity = none
