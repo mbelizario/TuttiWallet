@@ -21,6 +21,11 @@ dotnet format TuttiWallet.slnx --verify-no-changes
 - Os testes de integração da API precisam de Docker rodando (sobem um Postgres via Testcontainers automaticamente — não é preciso configurar nada à mão).
 - Para rodar um único projeto de teste: `dotnet test tests/TuttiWallet.Domain.Tests`.
 
+## Onde encontrar mais contexto
+
+- **Decisões técnicas e seus motivos**: [`docs/adr/`](docs/adr/README.md). Leia o ADR antes de propor algo que contrarie uma decisão (ex.: trocar Dapper por EF Core).
+- **Instruções por pasta**: `src/TuttiWallet.Api`, `src/TuttiWallet.Web`, `src/TuttiWallet.Migrator` e `tests` têm `AGENTS.md` próprio. Ao editar arquivos nessas pastas, leia também o da pasta; ele complementa este e prevalece em caso de conflito.
+
 ## Stack
 
 - **Backend**: C# / ASP.NET Core (.NET 10), Minimal APIs.
@@ -148,7 +153,7 @@ O agente é responsável por criar branches, commits e Pull Requests — não ap
 - **Commits**: pequenos, cada um representando a finalização de uma etapa do desenvolvimento (não um WIP genérico) e fazendo sentido por si só. Mensagem significativa e em português do Brasil.
 - **Pull Requests**: abertos para a branch `preprod` (nunca direto para `main`), automaticamente ao concluir o caso de uso.
   - Título: prefixo `Preprod - ` seguido de um título significativo para a demanda.
-  - Corpo: apenas o link do card do Trello correspondente (o card é enviado pelo autor no início da conversa).
+  - Corpo: parte do template `.github/pull_request_template.md` — o link do card do Trello correspondente (enviado pelo autor no início da conversa) seguido do checklist de validação, com os itens que de fato foram verificados marcados. Não acrescente outras seções.
   - Label: a label correspondente ao tipo da branch — `Melhoria` para branches `feat/`, `bug` para branches `bug/`.
 - O fluxo de trabalho abaixo continua valendo: discutir decisões de implementação antes de codar — o que muda é que, uma vez o caso de uso pronto e aprovado, o agente cuida da mecânica de branch/commit/PR sem precisar de um pedido explícito a cada etapa.
 
@@ -162,7 +167,7 @@ O repositório tem o [Claude GitHub App](https://github.com/apps/claude) instala
 
 ## Limites — exigem autorização explícita do autor antes de agir
 
-- **Scripts de migração já aplicados** (`src/TuttiWallet.Migrator/Scripts`): avisar antes de alterar um script existente — o padrão é criar um novo script, não editar um já aplicado.
+- **Scripts de migração já aplicados** (`src/TuttiWallet.Migrator/Scripts`): avisar antes de alterar um script existente — o padrão é criar um novo script, não editar um já aplicado. O CI barra o PR que modifica, remove ou renomeia um script existente; só a label `editar-script-aplicado`, aplicada pelo autor, libera.
 - **Comandos destrutivos** (ex.: `docker compose down -v`, `DROP TABLE`, reset de banco): nunca executar sem autorização explícita do autor no momento.
 - **Novas dependências/pacotes** (NuGet ou outros): sempre perguntar antes de instalar.
 
